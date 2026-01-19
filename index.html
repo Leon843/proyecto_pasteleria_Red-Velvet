@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pastelería Red Velvet</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;600&family=Berkshire+Swash&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- BOTÓN CARRITO -->
+<div class="cart-floating-btn" onclick="toggleCart()">
+🛒 Carrito (<span id="cart-count">0</span>)
+</div>
+
+<!-- PANEL CARRITO -->
+<div class="cart-sidebar" id="cart">
+<h2>Tu pedido</h2>
+
+<div id="cart-items">
+<p id="empty-cart">Tu carrito está esperando algo dulce 🍰</p>
+</div>
+
+<p class="cart-total">Total: $<span id="total">0</span></p>
+
+<button class="btn" onclick="vaciarCarrito()">🗑 Vaciar carrito</button>
+<button class="order-btn" onclick="confirmarPedido()">Finalizar pedido</button>
+<button class="btn" onclick="toggleCart()">Seguir comprando</button>
+</div>
+
+<!-- MODAL -->
+<div id="modal" style="
+display:none;
+position:fixed;
+top:0;left:0;
+width:100%;height:100%;
+background:#00000070;
+z-index:3000;
+display:flex;
+align-items:center;
+justify-content:center;">
+
+<div style="
+background:white;
+padding:30px;
+border-radius:20px;
+max-width:320px;
+text-align:center;
+border:3px solid #d2b6a3;">
+<h2 style="font-family:'Berkshire Swash';" id="modal-title">✨ Mensaje ✨</h2>
+<p id="modal-text"></p>
+<button class="btn" onclick="cerrarModal()">Aceptar</button>
+</div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+<a href="#home">Inicio</a>
+<a href="#about">Sobre Nosotros</a>
+<a href="#menu">Menú</a>
+<a href="#taller">Taller</a>
+<a href="#contacto">Contacto</a>
+</nav>
+
+<!-- HOME -->
+<div class="container" id="home">
+<h1 class="title">Red Velvet</h1>
+<p class="subtitle">Pastelería artesanal ♡</p>
+<img src="img/pasteleriaa.jpeg" class="hero-img">
+</div>
+
+<!-- ABOUT -->
+<div class="container" id="about">
+<h1 class="title">Sobre Nosotros</h1>
+<div class="grid-2">
+
+<div class="box">
+<h3>Nuestras creaciones</h3>
+<p>Bento cakes, cupcakes y pasteles temáticos.</p>
+<div class="img"><img src="img/mostrador.jpeg"></div>
+</div>
+
+<div class="box">
+<h3>Historia</h3>
+<p>Red Velvet nació para mezclar lo adorable con lo delicioso.</p>
+<button class="btn" onclick="mensajeDecorativo('Nuestra historia completa estará disponible muy pronto 💕')">Saber más</button>
+</div>
+
+</div>
+</div>
+
+<!-- MENU -->
+<div class="container" id="menu">
+<h1 class="title">Menú</h1>
+
+<div class="grid-3">
+
+<div class="box">
+<h3>Pastel Red Velvet</h3>
+<div class="img"><img src="img/pastelred.jpeg"></div>
+<p>$1200</p>
+<button class="add-btn" onclick="addToCart('Pastel Red Velvet',1200)">Agregar</button>
+</div>
+
+<div class="box">
+<h3>Cupcakes</h3>
+<div class="img"><img src="img/cupcake.jpeg"></div>
+<p>$1100</p>
+<button class="add-btn" onclick="addToCart('Cupcakes',1100)">Agregar</button>
+</div>
+
+<div class="box">
+<h3>Brownies</h3>
+<div class="img"><img src="img/brownies.jpeg"></div>
+<p>$900</p>
+<button class="add-btn" onclick="addToCart('Brownies',900)">Agregar</button>
+</div>
+
+<div class="box">
+<h3>Pastel 3 Leches</h3>
+<div class="img"><img src="img/tresleches.jpg"></div>
+<p>$700</p>
+<button class="add-btn" onclick="addToCart('Pastel 3 Leches',700)">Agregar</button>
+</div>
+
+<div class="box">
+<h3>Pastel Chocolate</h3>
+<div class="img"><img src="img/pastelchoco.jpg"></div>
+<p>$800</p>
+<button class="add-btn" onclick="addToCart('Pastel Chocolate',800)">Agregar</button>
+</div>
+
+<div class="box">
+<h3>Flan Clásico</h3>
+<div class="img"><img src="img/flanclasico.jpg"></div>
+<p>$100</p>
+<button class="add-btn" onclick="addToCart('Flan Clásico',100)">Agregar</button>
+</div>
+
+</div>
+</div>
+
+<!-- TALLER -->
+<div class="container" id="taller">
+<h1 class="title">Taller de Repostería</h1>
+<div class="box">
+<p>Aprende a decorar bento cakes desde cero.</p>
+<div class="img"><img src="img/tallerr.jpeg"></div>
+<button class="btn" onclick="mensajeDecorativo('Las reservas en línea estarán disponibles pronto 🧁')">Reservar</button>
+</div>
+</div>
+
+<!-- CONTACTO -->
+<div class="container" id="contacto">
+<h1 class="title">Contacto</h1>
+<div class="box">
+<p>📞 55 5555 5555</p>
+<p>📍 CDMX</p>
+<button class="btn" onclick="mensajeDecorativo('Muy pronto podrás contactarnos directamente desde aquí 💌')">Enviar mensaje</button>
+</div>
+</div>
+
+<script>
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+function saveCart(){
+localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+function addToCart(name, price){
+const item = cart.find(p => p.name === name);
+if(item){
+item.qty++;
+}else{
+cart.push({name, price, qty:1});
+}
+saveCart();
+updateCart();
+animateBadge();
+}
+
+function updateCart(){
+const items = document.getElementById("cart-items");
+items.innerHTML = "";
+let total = 0;
+
+if(cart.length === 0){
+items.innerHTML = `<p id="empty-cart">Tu carrito está esperando algo dulce 🍰</p>`;
+}else{
+cart.forEach((item, i)=>{
+total += item.price * item.qty;
+items.innerHTML += `
+<div class="cart-item">
+<span>${item.name} (${item.qty})</span>
+<div>
+<button onclick="changeQty(${i},-1)">−</button>
+<button onclick="changeQty(${i},1)">+</button>
+</div>
+</div>`;
+});
+}
+
+document.getElementById("total").textContent = total;
+document.getElementById("cart-count").textContent =
+cart.reduce((sum,i)=>sum+i.qty,0);
+}
+
+function changeQty(index, delta){
+cart[index].qty += delta;
+if(cart[index].qty <= 0){
+cart.splice(index,1);
+}
+saveCart();
+updateCart();
+}
+
+function vaciarCarrito(){
+cart = [];
+saveCart();
+updateCart();
+}
+
+function toggleCart(){
+document.getElementById("cart").classList.toggle("open");
+}
+
+function confirmarPedido(){
+if(cart.length === 0){
+mostrarModal("Carrito vacío", "Agrega algo delicioso antes de continuar 🍰");
+return;
+}
+mostrarModal("Confirmar pedido", "¿Deseas confirmar tu pedido?");
+}
+
+function finalizarPedido(){
+let total = document.getElementById("total").textContent;
+let mensaje = "Hola, quiero hacer un pedido:\n\n";
+cart.forEach(p=>{
+mensaje += `${p.qty} x ${p.name}\n`;
+});
+mensaje += `\nTotal: $${total}`;
+
+window.open(`https://wa.me/5210000000000?text=${encodeURIComponent(mensaje)}`);
+
+cart = [];
+saveCart();
+updateCart();
+mostrarModal("Pedido exitoso 💖", `Tu pedido por $${total} se realizó con éxito`);
+}
+
+function mensajeDecorativo(texto){
+mostrarModal("Información", texto);
+}
+
+function mostrarModal(titulo, texto){
+document.getElementById("modal-title").textContent = titulo;
+document.getElementById("modal-text").textContent = texto;
+document.getElementById("modal").style.display = "flex";
+}
+
+function cerrarModal(){
+document.getElementById("modal").style.display = "none";
+}
+
+function animateBadge(){
+const badge = document.getElementById("cart-count");
+badge.style.transform = "scale(1.3)";
+setTimeout(()=>badge.style.transform="scale(1)",200);
+}
+
+updateCart();
+</script>
+
+</body>
+</html>
